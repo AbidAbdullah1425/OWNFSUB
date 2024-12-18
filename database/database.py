@@ -1,8 +1,8 @@
 import pymongo
-from config import DB_URI, DB_NAME
+from config import DB_URL, DB_NAME
 
 # MongoDB setup
-dbclient = pymongo.MongoClient(DB_URI)
+dbclient = pymongo.MongoClient(DB_URL)
 database = dbclient[DB_NAME]
 
 # Collections
