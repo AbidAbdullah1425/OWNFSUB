@@ -5,7 +5,7 @@ from logging.handlers import RotatingFileHandler
 
 #MENDATORY
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "7438884533:AAGUCrHeOxpBJrXXu3PTyrkWPirgYkwbuIc")
-APP_ID = int(os.environ.get("APP_ID", "26254064"))
+API_ID = int(os.environ.get("API_ID", "26254064"))
 API_HASH = os.environ.get("API_HASH", "72541d6610ae7730e6135af9423b319c")
 AUTO_DELETE = os.environ.get("AUTO_DELETE", True)
 AUTO_DELETE_MS = int(os.environ.get("AUTO_DELETE_MS", "600"))
