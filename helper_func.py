@@ -3,13 +3,13 @@ import re
 import asyncio
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
-from config import FSUB1, FSUB2, FSUB3, FSUB4, ADMINS, AUTO_DELETE_TIME, AUTO_DEL_SUCCESS_MSG
+from config import FSUB_1, FSUB_2, FSUB_3, FSUB_4, ADMINS, AUTO_DELETE_MS, AUTO_DELETE_MSG
 from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant
 from pyrogram.errors import FloodWait
 
 
 async def is_subscribed(filter, client, update):
-    if not (FSUB1 or FSUB2 or FSUB3 or FSUB4):
+    if not (FSUB_1 or FSUB_2 or FSUB_3 or FSUB_4):
         return True
 
     user_id = update.from_user.id
@@ -19,7 +19,7 @@ async def is_subscribed(filter, client, update):
 
     member_status = [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]
 
-    for channel_id in [FSUB1, FSUB2, FSUB3, FSUB4]:
+    for channel_id in [FSUB_1, FSUB_2, FSUB_3, FSUB_4]:
         if not channel_id:
             continue
 
@@ -120,7 +120,7 @@ def get_readable_time(seconds: int) -> str:
 
 
 async def delete_file(messages, client, process):
-    await asyncio.sleep(AUTO_DELETE_TIME)
+    await asyncio.sleep(AUTO_DELETE_MS)
     for msg in messages:
         try:
             await client.delete_messages(chat_id=msg.chat.id, message_ids=[msg.id])
@@ -128,7 +128,7 @@ async def delete_file(messages, client, process):
             await asyncio.sleep(e.x)
             print(f"The attempt to delete the media {msg.id} was unsuccessful: {e}")
 
-    await process.edit_text(AUTO_DEL_SUCCESS_MSG)
+    await process.edit_text(AUTO_DELETE_MSG)
 
 
 subscribed = filters.create(is_subscribed)
