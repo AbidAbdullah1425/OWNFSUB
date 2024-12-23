@@ -21,7 +21,7 @@ class Bot(Client):
                 "root": "plugins"
             },
             workers=BOT_WORKERS,
-            bot_token=_BOT_TOKEN
+            bot_token=BOT_TOKEN
         )
         self.LOGGER = LOGGER
 
