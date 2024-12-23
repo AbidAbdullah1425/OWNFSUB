@@ -20,6 +20,7 @@ FSUB_2 = int(os.environ.get("FSUB_2", "-1002003740934"))
 FSUB_3 = int(os.environ.get("FSUB_3", "-1002125561929"))
 FSUB_4 = int(os.environ.get("FSUB_4", "-1002092136573"))
 BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "4"))
+START_PIC = os.environ.get("START_PIC", "https://envs.sh/_BZ.jpg")
 START_MSG = os.environ.get("START_MESSAGE", "Hello {first} I'm a bot who can store files and share it via spacial links")
 try:
     ADMINS=[]
