@@ -170,11 +170,6 @@ async def start_command(client: Client, message: Message):
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
     try:
-        # Extract the start parameter (if any)
-        start_param = None
-        if len(message.command) > 1:
-            start_param = message.command[1]
-
         buttons = [
             [
                 InlineKeyboardButton(text="Join Channel", url=client.invitelink),
@@ -186,16 +181,17 @@ async def not_joined(client: Client, message: Message):
             ]
         ]
 
-        # Add the "Try Again" button with the original start parameter
-        if start_param:
+        try:
             buttons.append(
                 [
                     InlineKeyboardButton(
                         text='Try Again',
-                        url=f"https://t.me/{client.username}?start={start_param}"
+                        url=f"https://t.me/{client.username}?start={message.command[1]}"
                     )
                 ]
             )
+        except IndexError:
+            pass
 
         await message.reply(
             text=FORCE_MSG.format(
@@ -212,9 +208,6 @@ async def not_joined(client: Client, message: Message):
 
     except Exception as e:
         await message.reply("An error occurred. Please try again later.")
-
-
-
 
 
 @Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
