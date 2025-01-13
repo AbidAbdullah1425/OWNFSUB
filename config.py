@@ -2,6 +2,7 @@ import os
 import logging
 from logging.handlers import RotatingFileHandler
 from pymongo import MongoClient
+from bson import ObjectId
 
 # Mandatory Environment Variables
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "7438884533:AAGUCrHeOxpBJrXXu3PTyrkWPirgYkwbuIc")
@@ -30,7 +31,8 @@ FSUB_4 = int(os.environ.get("FSUB_4", "-1002386614375"))
 # Function to Fetch Latest FSUB Values from MongoDB
 def update_fsub_values():
     global FSUB_1, FSUB_2, FSUB_3, FSUB_4
-    settings = collection.find_one({"_id": "6784b63b7966c6407562bb40"})  # Adjust `_id` as needed
+    # Use ObjectId here to correctly query MongoDB
+    settings = collection.find_one({"_id": ObjectId("6784b63b7966c6407562bb40")})  # Adjust `_id` as needed
     if settings:
         FSUB_1 = int(settings.get("FSUB_1", FSUB_1))
         FSUB_2 = int(settings.get("FSUB_2", FSUB_2))
