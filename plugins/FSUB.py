@@ -1,7 +1,7 @@
 import logging
 from logging.handlers import RotatingFileHandler
 from bot import Bot
-from config import OWNER_ID, update_fsub_values, collection
+from config import OWNER_ID, update_fsub_values, collection, LOGGER
 from pyrogram import Client, filters
 
 
@@ -31,5 +31,10 @@ def update_fsub1_value()
 @Bot.on_message(filters.private & filters.user(OWNER_ID) & filters.command("set_fsub1"))
 async def setfsub1(client, message)
     if len(message.command) > 2:
-        await LOGGER
+        await LOGGER.error("format problem example: /set_fsub1 -100828292922")
+        return
+
+    new_fsub_value = message.command[1]
+    response = update_fsub1_value(new_fsub_value)
+    await message.reply(response)
     
