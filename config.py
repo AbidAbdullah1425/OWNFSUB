@@ -15,10 +15,36 @@ OWNER_ID = int(os.environ.get("OWNER_ID", "5296584067"))
 PORT = os.environ.get("PORT", "8080")
 DB_URL = os.environ.get("DB_URL", "mongodb+srv://teamprosperpay:AbidAbdullah199@cluster0.z93fita.mongodb.net/")
 DB_NAME = os.environ.get("DB_NAME", "Cluster0")
+client = MongoClient(DB_URL)
+db = client[DB_NAME]
+collection = db["settings"]
+
+
+
+
 FSUB_1 = int(os.environ.get("FSUB_1", "-1002315395252"))
 FSUB_2 = int(os.environ.get("FSUB_2", "-1002386614375"))
 FSUB_3 = int(os.environ.get("FSUB_3", "-1002253609533"))
 FSUB_4 = int(os.environ.get("FSUB_4", "-1002386614375"))
+
+# Update Values from Database (if available)
+settings = collection.find_one()  # Fetching the document from the 'settings' collection
+
+if settings:
+    FSUB_1 = int(settings.get("FSUB_1", FSUB_1))  # Update FSUB_1 from the database
+    FSUB_2 = int(settings.get("FSUB_2", FSUB_2))  # Update FSUB_2 from the database
+    FSUB_3 = int(settings.get("FSUB_3", FSUB_3))  # Update FSUB_3 from the database
+    FSUB_4 = int(settings.get("FSUB_4", FSUB_4))  # Update FSUB_4 from the database
+
+# Set Updated Values Back to Environment Variables
+os.environ["FSUB_1"] = str(FSUB_1)
+os.environ["FSUB_2"] = str(FSUB_2)
+os.environ["FSUB_3"] = str(FSUB_3)
+os.environ["FSUB_4"] = str(FSUB_4)
+
+
+
+
 BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "4"))
 START_PIC = os.environ.get("START_PIC", "https://envs.sh/_BZ.jpg")
 START_MSG = os.environ.get("START_MESSAGE", "Hello {first} I'm a bot who can store files and share it via spacial links")
@@ -58,3 +84,6 @@ logging.getLogger("pyrogram").setLevel(logging.WARNING)
 
 def LOGGER(name: str) -> logging.Logger:
     return logging.getLogger(name)
+
+
+LOGGER("ForceSub").info(f"FSUB_1={FSUB_1}, FSUB_2={FSUB_2}, FSUB_3={FSUB_3}, FSUB_4={FSUB_4}")
