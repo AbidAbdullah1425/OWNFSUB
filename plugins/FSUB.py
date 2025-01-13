@@ -5,11 +5,12 @@ from config import OWNER_ID, update_fsub_values, collection, LOGGER
 from pyrogram import Client, filters
 from bson import ObjectId  # Import ObjectId
 
+
+# Refresh FSUB values after an update
 @Bot.on_message(filters.private & filters.user(OWNER_ID) & filters.command("update"))
 async def update_fsubs(client, message):
-    update_fsub_values()
+    update_fsub_values()  # Update the values from MongoDB
     await message.reply("Updated Successfully")
-
 
 # Update fsub_1 value using commands
 def update_fsub1_value(new_fsub_value):
@@ -18,7 +19,7 @@ def update_fsub1_value(new_fsub_value):
         LOGGER.warning("Invalid fsub1 channel, it must start with -100")
         return "Invalid fsub1 channel, it must start with -100"
 
-    # Perform the update operation, use ObjectId for the _id field
+    # Perform the update operation
     result = collection.update_one(
         {"_id": ObjectId("6784b63b7966c6407562bb40")},  # Use ObjectId here
         {"$set": {"FSUB_1": new_fsub_value}}
@@ -26,8 +27,11 @@ def update_fsub1_value(new_fsub_value):
 
     # Check if the document was updated
     if result.matched_count > 0:
+        # Refresh FSUB values after the update
+        update_fsub_values()
+
         # Fetch the updated document to confirm the change
-        updated_document = collection.find_one({"_id": ObjectId("6784b63b7966c6407562bb40")})  # Use ObjectId here
+        updated_document = collection.find_one({"_id": ObjectId("6784b63b7966c6407562bb40")})
         updated_fsub_value = updated_document.get("FSUB_1")
 
         if updated_fsub_value == new_fsub_value:
@@ -40,7 +44,6 @@ def update_fsub1_value(new_fsub_value):
 @Bot.on_message(filters.private & filters.user(OWNER_ID) & filters.command("set_fsub1"))
 async def setfsub1(client, message):
     if len(message.command) < 2:
-        # Log the warning correctly without await
         LOGGER.warning("Please provide a valid FSUB_1 channel ID, example: /set_fsub1 -100828292922")
         return
 
