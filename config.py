@@ -3,8 +3,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from pymongo import MongoClient
 
-
-#MENDATORY
+# Mandatory Environment Variables
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "7438884533:AAGUCrHeOxpBJrXXu3PTyrkWPirgYkwbuIc")
 API_ID = int(os.environ.get("API_ID", "26254064"))
 API_HASH = os.environ.get("API_HASH", "72541d6610ae7730e6135af9423b319c")
@@ -16,46 +15,40 @@ OWNER_ID = int(os.environ.get("OWNER_ID", "5296584067"))
 PORT = os.environ.get("PORT", "8080")
 DB_URL = os.environ.get("DB_URL", "mongodb+srv://teamprosperpay:AbidAbdullah199@cluster0.z93fita.mongodb.net/")
 DB_NAME = os.environ.get("DB_NAME", "Cluster0")
+
+# MongoDB Client Setup
 client = MongoClient(DB_URL)
 db = client[DB_NAME]
 collection = db["settings"]
 
-
-
-
+# Default FSUB Variables
 FSUB_1 = int(os.environ.get("FSUB_1", "-1002315395252"))
 FSUB_2 = int(os.environ.get("FSUB_2", "-1002386614375"))
 FSUB_3 = int(os.environ.get("FSUB_3", "-1002253609533"))
 FSUB_4 = int(os.environ.get("FSUB_4", "-1002386614375"))
 
-# Fetch Individual FSUB Values from Database
-fsub_1_data = collection.find_one({"FSUB_1": {"$exists": True}})
-fsub_2_data = collection.find_one({"FSUB_2": {"$exists": True}})
-fsub_3_data = collection.find_one({"FSUB_3": {"$exists": True}})
-fsub_4_data = collection.find_one({"FSUB_4": {"$exists": True}})
+# Function to Fetch Latest FSUB Values from MongoDB
+def update_fsub_values():
+    global FSUB_1, FSUB_2, FSUB_3, FSUB_4
+    settings = collection.find_one({"_id": "6784b63b7966c6407562bb40"})  # Adjust `_id` as needed
+    if settings:
+        FSUB_1 = int(settings.get("FSUB_1", FSUB_1))
+        FSUB_2 = int(settings.get("FSUB_2", FSUB_2))
+        FSUB_3 = int(settings.get("FSUB_3", FSUB_3))
+        FSUB_4 = int(settings.get("FSUB_4", FSUB_4))
 
-# Update Variables if Found in Database
-if fsub_1_data:
-    FSUB_1 = int(fsub_1_data.get("FSUB_1", FSUB_1))
-if fsub_2_data:
-    FSUB_2 = int(fsub_2_data.get("FSUB_2", FSUB_2))
-if fsub_3_data:
-    FSUB_3 = int(fsub_3_data.get("FSUB_3", FSUB_3))
-if fsub_4_data:
-    FSUB_4 = int(fsub_4_data.get("FSUB_4", FSUB_4))
-
-
-
+# Call `update_fsub_values` Whenever FSUB Values Are Needed
+update_fsub_values()
 
 BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "4"))
 START_PIC = os.environ.get("START_PIC", "https://envs.sh/_BZ.jpg")
-START_MSG = os.environ.get("START_MESSAGE", "Hello {first} I'm a bot who can store files and share it via spacial links")
+START_MSG = os.environ.get("START_MESSAGE", "Hello {first} I'm a bot who can store files and share it via special links")
 try:
-    ADMINS=[]
+    ADMINS = []
     for x in (os.environ.get("ADMINS", "5296584067").split()):
         ADMINS.append(int(x))
 except ValueError:
-        raise Exception("Your Admins list does not contain valid integers.") 
+    raise Exception("Your Admins list does not contain valid integers.") 
 FORCE_MSG = os.environ.get("FORCE_SUB_MESSAGE", "You have to join our Channels First")
 CUSTOM_CAPTION = os.environ.get("CUSTOM_CAPTION", None)
 PROTECT_CONTENT = True if os.environ.get('PROTECT_CONTENT', "False") == "True" else False
@@ -87,5 +80,5 @@ logging.getLogger("pyrogram").setLevel(logging.WARNING)
 def LOGGER(name: str) -> logging.Logger:
     return logging.getLogger(name)
 
-
+# Log Updated FSUB Values
 LOGGER("ForceSub").info(f"FSUB_1={FSUB_1}, FSUB_2={FSUB_2}, FSUB_3={FSUB_3}, FSUB_4={FSUB_4}")
