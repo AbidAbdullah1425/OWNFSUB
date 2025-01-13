@@ -28,20 +28,21 @@ FSUB_2 = int(os.environ.get("FSUB_2", "-1002386614375"))
 FSUB_3 = int(os.environ.get("FSUB_3", "-1002253609533"))
 FSUB_4 = int(os.environ.get("FSUB_4", "-1002386614375"))
 
-# Update Values from Database (if available)
-settings = collection.find_one()  # Fetching the document from the 'settings' collection
+# Fetch Individual FSUB Values from Database
+fsub_1_data = collection.find_one({"FSUB_1": {"$exists": True}})
+fsub_2_data = collection.find_one({"FSUB_2": {"$exists": True}})
+fsub_3_data = collection.find_one({"FSUB_3": {"$exists": True}})
+fsub_4_data = collection.find_one({"FSUB_4": {"$exists": True}})
 
-if settings:
-    FSUB_1 = int(settings.get("FSUB_1", FSUB_1))  # Update FSUB_1 from the database
-    FSUB_2 = int(settings.get("FSUB_2", FSUB_2))  # Update FSUB_2 from the database
-    FSUB_3 = int(settings.get("FSUB_3", FSUB_3))  # Update FSUB_3 from the database
-    FSUB_4 = int(settings.get("FSUB_4", FSUB_4))  # Update FSUB_4 from the database
-
-# Set Updated Values Back to Environment Variables
-os.environ["FSUB_1"] = str(FSUB_1)
-os.environ["FSUB_2"] = str(FSUB_2)
-os.environ["FSUB_3"] = str(FSUB_3)
-os.environ["FSUB_4"] = str(FSUB_4)
+# Update Variables if Found in Database
+if fsub_1_data:
+    FSUB_1 = int(fsub_1_data.get("FSUB_1", FSUB_1))
+if fsub_2_data:
+    FSUB_2 = int(fsub_2_data.get("FSUB_2", FSUB_2))
+if fsub_3_data:
+    FSUB_3 = int(fsub_3_data.get("FSUB_3", FSUB_3))
+if fsub_4_data:
+    FSUB_4 = int(fsub_4_data.get("FSUB_4", FSUB_4))
 
 
 
