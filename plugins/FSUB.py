@@ -1,3 +1,3 @@
+from pyrogram import Client, filters
 
-
-@Bot.on_message(filter.message())
+@Bot.on_message(filters.message())
