@@ -12,7 +12,7 @@ async def update_fsubs(client, message):
 
 
 #update fsub_1 value using commands
-def update_fsub1_value()
+def update_fsub1_value():
     new_fsub_value = input("Send new FSUB_1 Channel id")
     if not new_fsub_value.startswith("-100"):
     	print("Invaild fsub1 channel must starts with -100")
