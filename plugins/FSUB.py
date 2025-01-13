@@ -1,5 +1,5 @@
 from bot import Bot
-from config import OWNER_ID
+from config import OWNER_ID, update_fsub_values
 from pyrogram import Client, filters
 
 
