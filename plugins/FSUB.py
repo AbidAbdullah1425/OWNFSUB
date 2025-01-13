@@ -29,7 +29,7 @@ def update_fsub1_value():
             print("Document not found or update unsuccesfull")
 
 @Bot.on_message(filters.private & filters.user(OWNER_ID) & filters.command("set_fsub1"))
-async def setfsub1(client, message)
+async def setfsub1(client, message):
     if len(message.command) > 2:
         await LOGGER.error("format problem example: /set_fsub1 -100828292922")
         return
