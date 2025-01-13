@@ -19,7 +19,7 @@ def update_fsub1_value():
     	return
     	
     result = collection.update_one(
-    {"_id": "6784b63b7966c6407562bb40"}
+    {"_id": "6784b63b7966c6407562bb40"},
     {"$set": {"FSUB_1": new_fsub_value}}
     )
     
