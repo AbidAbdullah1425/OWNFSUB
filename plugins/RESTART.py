@@ -16,7 +16,7 @@ async def restart_bot(_, message: Message):
     
     try:
         # Gracefully stop the bot
-        await Bot.stop()
+        await bot_instance.stop()
     except Exception as e:
         LOGGER(__name__).exception(f"Error while stopping bot: {e}")
         await msg.edit_text("❌ Failed to stop the bot.")
