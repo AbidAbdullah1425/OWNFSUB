@@ -9,6 +9,7 @@ from bson import ObjectId  # Import ObjectId
 # Refresh FSUB values after an update
 @Bot.on_message(filters.private & filters.user(OWNER_ID) & filters.command("update"))
 async def update_fsubs(client, message):
+    # This ensures the values are reloaded from the database and updated in memory
     update_fsub_values()  # Update the values from MongoDB
     await message.reply("Updated Successfully")
 
@@ -28,7 +29,7 @@ def update_fsub1_value(new_fsub_value):
     # Check if the document was updated
     if result.matched_count > 0:
         # Refresh FSUB values after the update
-        update_fsub_values()
+        update_fsub_values()  # Reload the values from the database
 
         # Fetch the updated document to confirm the change
         updated_document = collection.find_one({"_id": ObjectId("6784b63b7966c6407562bb40")})
@@ -54,6 +55,7 @@ async def setfsub1(client, message):
 
 @Bot.on_message(filters.private & filters.user(OWNER_ID) & filters.command("channels"))
 async def showfsub(client, message):
+    # After updating values, the latest values will be used here
     response = (
         "Current FSUB Variables:\n\n"
         f"FSUB_1: {FSUB_1}\n"
@@ -61,6 +63,5 @@ async def showfsub(client, message):
         f"FSUB_3: {FSUB_3}\n"
         f"FSUB_4: {FSUB_4}\n"
     )
-
 
     await message.reply(response)
