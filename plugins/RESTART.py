@@ -4,7 +4,7 @@ from pyrogram.types import Message
 from config import OWNER_ID, LOGGER
 from bot import Bot
 
-@Bot.on_message(filters.command("restart") & filters.user(ADMINS))
+@Bot.on_message(filters.command("restart") & filters.user(OWNER_ID))
 async def restart_bot(_, message: Message):
     try:
         msg = await message.reply_text("`Restarting bot...`")
