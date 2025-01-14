@@ -1,7 +1,7 @@
 import logging
 from logging.handlers import RotatingFileHandler
 from bot import Bot
-from config import OWNER_ID, update_fsub_values, collection, LOGGER
+from config import OWNER_ID, update_fsub_values, collection, LOGGER, FSUB_1, FSUB_2, FSUB_3, FSUB4
 from pyrogram import Client, filters
 from bson import ObjectId  # Import ObjectId
 
@@ -49,5 +49,18 @@ async def setfsub1(client, message):
 
     new_fsub_value = message.command[1]
     response = update_fsub1_value(new_fsub_value)
+
+    await message.reply(response)
+
+@Bot.on_message(filters.private & filters.user(OWNER_ID) & filters.command("channels"))
+async def showfsub(client, message):
+    response = (
+        "Current FSUB Variables:\n\n"
+        f"FSUB_1: {FSUB_1}\n"
+        f"FSUB_2: {FSUB_2}\n"
+        f"FSUB_3: {FSUB_3}\n"
+        f"FSUB_4: {FSUB_4}\n"
+    )
+
 
     await message.reply(response)
