@@ -1,6 +1,6 @@
 import os, sys
 from bot import Bot
-from config import OWNER_ID
+from config import OWNER_ID, FSUB_1
 from pyrogram.types import Message
 from pyrogram import Client, filters
 from pyrogram.errors import FloodWait, InputUserDeactivated, UserIsBlocked, PeerIdInvalid
@@ -19,3 +19,6 @@ async def restart_bot(b, m):
 
         # Restart the bot process
         os.execl(sys.executable, sys.executable, *sys.argv)
+
+@Bot.on_message(filters.private & filters.command("fsub1") & filters.user(OWNER_ID))
+print(FSUB_1)
