@@ -1,10 +1,12 @@
 import os, sys
+from bot import Bot
+from config import OWNER_ID
 from pyrogram.types import Message
 from pyrogram import Client, filters
 from pyrogram.errors import FloodWait, InputUserDeactivated, UserIsBlocked, PeerIdInvalid
 
 
-@Client.on_message(filters.private & filters.command("restart") & filters.user(ADMIN_USER_ID))
+@Bot.on_message(filters.private & filters.command("restart") & filters.user(OWNER_ID))
 async def restart_bot(b, m):
     global is_restarting
     if not is_restarting:
