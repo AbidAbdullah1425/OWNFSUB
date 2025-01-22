@@ -24,17 +24,19 @@ db = client[DB_NAME]
 collection = db["settings"]
 
 # Redis Configuration
-REDIS_HOST = os.environ.get("REDIS_HOST", "redis-17680.c232.us-east-1-2.ec2.redns.redis-cloud.com:17680")
+REDIS_HOST = os.environ.get("REDIS_HOST", "redis-17680.c232.us-east-1-2.ec2.redns.redis-cloud.com")
 REDIS_PORT = int(os.environ.get("REDIS_PORT", "17680"))
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "OvQhflEV6b8yu6OJMHo2eynM8XR0GJJC")
 
-# Connect to Redis
+#redis connect
 redis_client = redis.StrictRedis(
     host=REDIS_HOST,
     port=REDIS_PORT,
     password=REDIS_PASSWORD,
-    decode_responses=True  # Ensures data is returned as strings
+    ssl=True,  # Enable SSL
+    decode_responses=True
 )
+
 
 # Function to Fetch FSUB Variables from Redis
 def update_fsub_values():
