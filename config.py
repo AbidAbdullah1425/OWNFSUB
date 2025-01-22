@@ -1,5 +1,6 @@
 import os
 import logging
+import redis
 from logging.handlers import RotatingFileHandler
 from pymongo import MongoClient
 from bson import ObjectId
@@ -22,22 +23,26 @@ client = MongoClient(DB_URL)
 db = client[DB_NAME]
 collection = db["settings"]
 
-# Default FSUB Variables
-FSUB_1 = int(os.environ.get("FSUB_1", "-1002315395252"))
-FSUB_2 = int(os.environ.get("FSUB_2", "-1002386614375"))
-FSUB_3 = int(os.environ.get("FSUB_3", "-1002253609533"))
-FSUB_4 = int(os.environ.get("FSUB_4", "-1002386614375"))
+# Redis Configuration
+REDIS_HOST = os.environ.get("REDIS_HOST", "your_redis_host")
+REDIS_PORT = int(os.environ.get("REDIS_PORT", "6379"))
+REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "your_redis_password")
 
-# Function to Fetch Latest FSUB Values from MongoDB
+# Connect to Redis
+redis_client = redis.StrictRedis(
+    host=REDIS_HOST,
+    port=REDIS_PORT,
+    password=REDIS_PASSWORD,
+    decode_responses=True  # Ensures data is returned as strings
+)
+
+# Function to Fetch FSUB Variables from Redis
 def update_fsub_values():
     global FSUB_1, FSUB_2, FSUB_3, FSUB_4
-    # Use ObjectId here to correctly query MongoDB
-    settings = collection.find_one({"_id": ObjectId("6784b63b7966c6407562bb40")})  # Adjust `_id` as needed
-    if settings:
-        FSUB_1 = int(settings.get("FSUB_1", FSUB_1))
-        FSUB_2 = int(settings.get("FSUB_2", FSUB_2))
-        FSUB_3 = int(settings.get("FSUB_3", FSUB_3))
-        FSUB_4 = int(settings.get("FSUB_4", FSUB_4))
+    FSUB_1 = int(redis_client.get("FSUB_1") or "-1002315395252")
+    FSUB_2 = int(redis_client.get("FSUB_2") or "-1002386614375")
+    FSUB_3 = int(redis_client.get("FSUB_3") or "-1002253609533")
+    FSUB_4 = int(redis_client.get("FSUB_4") or "-1002386614375")
 
 # Call `update_fsub_values` Whenever FSUB Values Are Needed
 update_fsub_values()
