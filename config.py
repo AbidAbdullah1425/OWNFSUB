@@ -24,9 +24,9 @@ db = client[DB_NAME]
 collection = db["settings"]
 
 # Redis Configuration
-REDIS_HOST = os.environ.get("REDIS_HOST", "your_redis_host")
+REDIS_HOST = os.environ.get("REDIS_HOST", "redis-17680.c232.us-east-1-2.ec2.redns.redis-cloud.com:17680")
 REDIS_PORT = int(os.environ.get("REDIS_PORT", "6379"))
-REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "your_redis_password")
+REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "OvQhflEV6b8yu6OJMHo2eynM8XR0GJJC")
 
 # Connect to Redis
 redis_client = redis.StrictRedis(
