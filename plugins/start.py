@@ -170,17 +170,24 @@ async def start_command(client: Client, message: Message):
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
     try:
-        buttons = [
-            [
-                InlineKeyboardButton(text="Join Channel", url=client.invitelink),
-                InlineKeyboardButton(text="Join Channel", url=client.invitelink2),
-            ],
-            [
-                InlineKeyboardButton(text="Join Channel", url=client.invitelink3),
-                InlineKeyboardButton(text="Join Channel", url=client.invitelink4),
-            ]
-        ]
+        # Fetch the invite links dynamically
+        buttons = []
 
+        # Dynamically add channels from your configuration or database
+        for channel_id in [FSUB_1, FSUB_2, FSUB_3, FSUB_4]:  # Replace with actual FSUB_* values
+            try:
+                # Fetch chat details for each channel (this will allow retrieving the invite link)
+                chat = await client.get_chat(channel_id)
+                invite_link = chat.invite_link
+                buttons.append(
+                    [
+                        InlineKeyboardButton(text=f"Join {channel_id}", url=invite_link)
+                    ]
+                )
+            except Exception as e:
+                print(f"Failed to retrieve invite link for {channel_id}: {e}")
+
+        # Add retry button
         try:
             buttons.append(
                 [
@@ -193,6 +200,7 @@ async def not_joined(client: Client, message: Message):
         except IndexError:
             pass
 
+        # Send the message with the dynamically created buttons
         await message.reply(
             text=FORCE_MSG.format(
                 first=message.from_user.first_name,
@@ -208,6 +216,7 @@ async def not_joined(client: Client, message: Message):
 
     except Exception as e:
         await message.reply("An error occurred. Please try again later.")
+
 
 
 @Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
