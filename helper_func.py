@@ -3,13 +3,27 @@ import re
 import asyncio
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
-from config import FSUB_1, FSUB_2, FSUB_3, FSUB_4, ADMINS, AUTO_DELETE_MS, AUTO_DELETE_MSG
+from config import ADMINS, AUTO_DELETE_MS, AUTO_DELETE_MSG
 from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant
 from pyrogram.errors import FloodWait
 
+async def get_fsub_ids(client):
+    # Fetch the latest FSUB channel IDs directly from Telegram channels
+    fsub_ids = []
+    for channel in ["FSUB_1", "FSUB_2", "FSUB_3", "FSUB_4"]:
+        try:
+            chat = await client.get_chat(channel)
+            fsub_ids.append(chat.id)  # Get the channel ID
+        except Exception as e:
+            print(f"Error fetching channel {channel}: {e}")
+            fsub_ids.append(None)
+    return fsub_ids
+
 
 async def is_subscribed(filter, client, update):
-    if not (FSUB_1 or FSUB_2 or FSUB_3 or FSUB_4):
+    fsub_ids = await get_fsub_ids(client)  # Dynamically fetch FSUB values
+
+    if not any(fsub_ids):  # If no valid channel IDs
         return True
 
     user_id = update.from_user.id
@@ -19,7 +33,7 @@ async def is_subscribed(filter, client, update):
 
     member_status = [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]
 
-    for channel_id in [FSUB_1, FSUB_2, FSUB_3, FSUB_4]:
+    for channel_id in fsub_ids:
         if not channel_id:
             continue
 
