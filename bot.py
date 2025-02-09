@@ -10,7 +10,7 @@ import pyrogram.utils
 
 pyrogram.utils.MIN_CHANNEL_ID = -1009147483647
 
-from config import API_HASH, API_ID, LOGGER, BOT_TOKEN, BOT_WORKERS, FSUB_1, FSUB_2, FSUB_3, FSUB_4, DB_CHANNEL, PORT
+from config import API_HASH, API_ID, LOGGER, BOT_TOKEN, BOT_WORKERS, FSUB_1, FSUB_2, FSUB_3, FSUB_4, DB_CHANNEL, PORT, LOGGER
 
 STORAGE_CHANNEL = -1002197279542  # Channel to store invite links
 
