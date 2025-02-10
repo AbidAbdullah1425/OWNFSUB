@@ -20,9 +20,4 @@ async def restart_bot(b, m):
         # Restart the bot process
         os.execl(sys.executable, sys.executable, *sys.argv)
 
-@Bot.on_message(filters.private & filters.command("fsub1") & filters.user(OWNER_ID))
-async def checcing_fsub():
-    print(FSUB_1)
-
-checcing_fsub()
     
