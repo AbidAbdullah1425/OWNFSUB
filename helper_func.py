@@ -8,22 +8,20 @@ from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant
 from pyrogram.errors import FloodWait
 
 async def get_fsub_ids(client):
-    # Fetch the latest FSUB channel IDs directly from Telegram channels
-    fsub_ids = []
-    for channel in ["FSUB_1", "FSUB_2", "FSUB_3", "FSUB_4"]:
-        try:
-            chat = await client.get_chat(channel)
-            fsub_ids.append(chat.id)  # Get the channel ID
-        except Exception as e:
-            print(f"Error fetching channel {channel}: {e}")
-            fsub_ids.append(None)
-    return fsub_ids
+    try:
+        # Fetch the latest FSUB channel IDs from a Telegram post
+        message = await client.get_messages(-1002197279542, message_ids=[299])
+        fsub_ids = [int(i) for i in message.text.split() if i.isdigit()]
+        return fsub_ids
+    except Exception as e:
+        print(f"Error fetching FSUB IDs: {e}")
+        return []
 
 
 async def is_subscribed(filter, client, update):
-    fsub_ids = await get_fsub_ids(client)  # Dynamically fetch FSUB values
+    fsub_ids = await get_fsub_ids(client)  # Fetch FSUB IDs dynamically
 
-    if not any(fsub_ids):  # If no valid channel IDs
+    if not fsub_ids:  # If no valid channel IDs
         return True
 
     user_id = update.from_user.id
@@ -34,9 +32,6 @@ async def is_subscribed(filter, client, update):
     member_status = [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]
 
     for channel_id in fsub_ids:
-        if not channel_id:
-            continue
-
         try:
             member = await client.get_chat_member(chat_id=channel_id, user_id=user_id)
         except UserNotParticipant:
@@ -51,16 +46,13 @@ async def is_subscribed(filter, client, update):
 async def encode(string):
     string_bytes = string.encode("ascii")
     base64_bytes = base64.urlsafe_b64encode(string_bytes)
-    base64_string = (base64_bytes.decode("ascii")).strip("=")
-    return base64_string
+    return (base64_bytes.decode("ascii")).strip("=")
 
 
 async def decode(base64_string):
     base64_string = base64_string.strip("=")
     base64_bytes = (base64_string + "=" * (-len(base64_string) % 4)).encode("ascii")
-    string_bytes = base64.urlsafe_b64decode(base64_bytes)
-    string = string_bytes.decode("ascii")
-    return string
+    return base64.urlsafe_b64decode(base64_bytes).decode("ascii")
 
 
 async def get_messages(client, message_ids):
@@ -87,50 +79,42 @@ async def get_messages(client, message_ids):
 
 
 async def get_message_id(client, message):
-    if message.forward_from_chat:
-        if message.forward_from_chat.id == client.db_channel.id:
-            return message.forward_from_message_id
-        else:
-            return 0
-    elif message.forward_sender_name:
+    if message.forward_from_chat and message.forward_from_chat.id == client.db_channel.id:
+        return message.forward_from_message_id
+    elif message.forward_sender_name or not message.text:
         return 0
-    elif message.text:
-        pattern = "https://t.me/(?:c/)?(.*)/(\d+)"
-        matches = re.match(pattern, message.text)
-        if not matches:
-            return 0
-        channel_id = matches.group(1)
-        msg_id = int(matches.group(2))
-        if channel_id.isdigit():
-            if f"-100{channel_id}" == str(client.db_channel.id):
-                return msg_id
-        else:
-            if channel_id == client.db_channel.username:
-                return msg_id
-    else:
+
+    pattern = "https://t.me/(?:c/)?(.*)/(\d+)"
+    matches = re.match(pattern, message.text)
+    if not matches:
         return 0
+
+    channel_id, msg_id = matches.groups()
+    msg_id = int(msg_id)
+
+    if channel_id.isdigit():
+        if f"-100{channel_id}" == str(client.db_channel.id):
+            return msg_id
+    elif channel_id == client.db_channel.username:
+        return msg_id
+
+    return 0
 
 
 def get_readable_time(seconds: int) -> str:
-    count = 0
-    up_time = ""
+    time_units = ["s", "m", "h", "days"]
     time_list = []
-    time_suffix_list = ["s", "m", "h", "days"]
-    while count < 4:
-        count += 1
-        remainder, result = divmod(seconds, 60) if count < 3 else divmod(seconds, 24)
-        if seconds == 0 and remainder == 0:
+    
+    for i in range(4):
+        seconds, result = divmod(seconds, 60 if i < 2 else 24)
+        if seconds == 0 and result == 0:
             break
-        time_list.append(int(result))
-        seconds = int(remainder)
-    hmm = len(time_list)
-    for x in range(hmm):
-        time_list[x] = str(time_list[x]) + time_suffix_list[x]
+        time_list.append(f"{int(result)}{time_units[i]}")
+
     if len(time_list) == 4:
-        up_time += f"{time_list.pop()}, "
-    time_list.reverse()
-    up_time += ":".join(time_list)
-    return up_time
+        return f"{time_list.pop()}, " + ":".join(reversed(time_list))
+    
+    return ":".join(reversed(time_list))
 
 
 async def delete_file(messages, client, process):
@@ -140,7 +124,7 @@ async def delete_file(messages, client, process):
             await client.delete_messages(chat_id=msg.chat.id, message_ids=[msg.id])
         except Exception as e:
             await asyncio.sleep(e.x)
-            print(f"The attempt to delete the media {msg.id} was unsuccessful: {e}")
+            print(f"Failed to delete message {msg.id}: {e}")
 
     await process.edit_text(AUTO_DELETE_MSG)
 
