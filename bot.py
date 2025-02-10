@@ -24,7 +24,8 @@ class Bot(Client):
             workers=BOT_WORKERS,
             bot_token=BOT_TOKEN
         )
-        self.LOGGER = LOGGER
+        self.LOGGER = LOGGER(__name__)  # Assigns an actual logger instance
+
         self.invite_links = {}  # Store invite links globally
 
     async def start(self):
