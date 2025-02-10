@@ -9,10 +9,15 @@ from pyrogram.errors import FloodWait
 
 async def get_fsub_ids(client):
     try:
-        # Fetch the latest FSUB channel IDs from a Telegram post
+        # Fetch the message containing FSUB IDs
         message = await client.get_messages(-1002197279542, message_ids=[299])
-        fsub_ids = [int(i) for i in message.text.split() if i.isdigit()]
-        return fsub_ids
+
+        # Extract only FSUB IDs using regex
+        fsub_ids = re.findall(r"-100\d{10}", message.text)
+
+        # Convert extracted IDs to integers
+        return [int(i) for i in fsub_ids]
+    
     except Exception as e:
         print(f"Error fetching FSUB IDs: {e}")
         return []
@@ -84,7 +89,7 @@ async def get_message_id(client, message):
     elif message.forward_sender_name or not message.text:
         return 0
 
-    pattern = "https://t.me/(?:c/)?(.*)/(\d+)"
+    pattern = r"https://t.me/(?:c/)?(.*)/(\d+)"
     matches = re.match(pattern, message.text)
     if not matches:
         return 0
@@ -104,7 +109,7 @@ async def get_message_id(client, message):
 def get_readable_time(seconds: int) -> str:
     time_units = ["s", "m", "h", "days"]
     time_list = []
-    
+
     for i in range(4):
         seconds, result = divmod(seconds, 60 if i < 2 else 24)
         if seconds == 0 and result == 0:
@@ -113,7 +118,7 @@ def get_readable_time(seconds: int) -> str:
 
     if len(time_list) == 4:
         return f"{time_list.pop()}, " + ":".join(reversed(time_list))
-    
+
     return ":".join(reversed(time_list))
 
 
