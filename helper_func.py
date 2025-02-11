@@ -13,19 +13,22 @@ FSUB_FILE = "fsub.txt"  # File where FSUB IDs are stored
 def get_fsub_ids():
     """Retrieve FSUB IDs from the fsub.txt file."""
     if os.path.exists(FSUB_FILE):
-        with open(FSUB_FILE, "r") as file:
-            return [int(i) for i in file.read().split()]
+        try:
+            with open(FSUB_FILE, "r") as file:
+                return [int(i) for i in file.read().split()]
+        except Exception as e:
+            print(f"Error reading FSUB file: {e}")
+            return []
     return []
+
 
 async def is_subscribed(filter, client, update):
     """Check if the user is subscribed to all FSUB channels."""
     fsub_ids = get_fsub_ids()
-
     if not fsub_ids:  # No FSUB channels stored
         return True
 
     user_id = update.from_user.id
-
     if user_id in ADMINS:
         return True
 
@@ -35,12 +38,15 @@ async def is_subscribed(filter, client, update):
         try:
             member = await client.get_chat_member(chat_id=channel_id, user_id=user_id)
         except UserNotParticipant:
+            print(f"User {user_id} is not subscribed to channel {channel_id}")
             return False
 
         if member.status not in member_status:
+            print(f"User {user_id} is not a member of channel {channel_id}")
             return False
 
     return True
+
 
 async def encode(string):
     string_bytes = string.encode("ascii")
@@ -68,11 +74,13 @@ async def get_messages(client, message_ids):
                 chat_id=client.db_channel.id,
                 message_ids=temp_ids
             )
-        except:
+        except Exception as e:
+            print(f"Error retrieving messages: {e}")
             pass
         total_messages += len(temp_ids)
         messages.extend(msgs)
     return messages
+
 
 async def get_message_id(client, message):
     if message.forward_from_chat and message.forward_from_chat.id == client.db_channel.id:
@@ -96,6 +104,7 @@ async def get_message_id(client, message):
 
     return 0
 
+
 def get_readable_time(seconds: int) -> str:
     time_units = ["s", "m", "h", "days"]
     time_list = []
@@ -116,10 +125,13 @@ async def delete_file(messages, client, process):
     for msg in messages:
         try:
             await client.delete_messages(chat_id=msg.chat.id, message_ids=[msg.id])
-        except Exception as e:
+        except FloodWait as e:
             await asyncio.sleep(e.x)
+            await client.delete_messages(chat_id=msg.chat.id, message_ids=[msg.id])
+        except Exception as e:
             print(f"Failed to delete message {msg.id}: {e}")
 
     await process.edit_text(AUTO_DELETE_MSG)
+
 
 subscribed = filters.create(is_subscribed)
