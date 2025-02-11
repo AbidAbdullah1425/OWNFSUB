@@ -1,7 +1,6 @@
 import os
 from pyrogram import Client, filters
 from bot import Bot
-from fsub import update_fsub, get_fsub
 
 FILE_PATH = "fsub.txt"
 
