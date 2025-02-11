@@ -6,7 +6,7 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
 
 from bot import Bot
-from config import ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL_BUTTON, PROTECT_CONTENT, START_PIC, AUTO_DELETE_MS, AUTO_DELETE_MSG, FSUB_1, FSUB_2, FSUB_3, FSUB_4 
+from config import ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL_BUTTON, PROTECT_CONTENT, START_PIC, AUTO_DELETE_MS, AUTO_DELETE_MSG
 from helper_func import subscribed, decode, get_messages, delete_file
 from database.database import add_user, del_user, full_userbase, present_user
 
@@ -167,27 +167,39 @@ async def start_command(client: Client, message: Message):
         return
 
 
+
+
+
+# Function to get fsub ID from fsub.txt
+def get_fsub_id():
+    try:
+        with open('fsub.txt', 'r') as file:
+            fsub_id = file.read().strip()
+        return fsub_id
+    except Exception as e:
+        print(f"Error reading fsub.txt: {e}")
+        return None
+
+# Get fsub ID from the file
+fsub_id = get_fsub_id()
+
+# Export invitelink using fsub_id (assuming your links are based on the fsub_id)
+invitelink = f"https://t.me/joinchat/{fsub_id}" if fsub_id else None
+
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
     try:
-        # Fetch the invite links dynamically
-        buttons = []
+        buttons = [
+            [
+                InlineKeyboardButton(text="Join Channel", url=client.invitelink),
+                InlineKeyboardButton(text="Join Channel", url=client.invitelink2),
+            ],
+            [
+                InlineKeyboardButton(text="Join Channel", url=client.invitelink3),
+                InlineKeyboardButton(text="Join Channel", url=client.invitelink4),
+            ]
+        ]
 
-        # Dynamically add channels from your configuration or database
-        for channel_id in [FSUB_1, FSUB_2, FSUB_3, FSUB_4]:  # Replace with actual FSUB_* values
-            try:
-                # Fetch chat details for each channel (this will allow retrieving the invite link)
-                chat = await client.get_chat(channel_id)
-                invite_link = chat.invite_link
-                buttons.append(
-                    [
-                        InlineKeyboardButton(text=f"Join {channel_id}", url=invite_link)
-                    ]
-                )
-            except Exception as e:
-                print(f"Failed to retrieve invite link for {channel_id}: {e}")
-
-        # Add retry button
         try:
             buttons.append(
                 [
@@ -200,7 +212,6 @@ async def not_joined(client: Client, message: Message):
         except IndexError:
             pass
 
-        # Send the message with the dynamically created buttons
         await message.reply(
             text=FORCE_MSG.format(
                 first=message.from_user.first_name,
@@ -216,9 +227,6 @@ async def not_joined(client: Client, message: Message):
 
     except Exception as e:
         await message.reply("An error occurred. Please try again later.")
-
-
-
 @Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
 async def get_users(client: Bot, message: Message):
     msg = await client.send_message(chat_id=message.chat.id, text="Processing ...")
