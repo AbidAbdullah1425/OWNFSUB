@@ -10,9 +10,15 @@ from pyrogram.errors import FloodWait
 
 FSUB_FILE = "fsub.txt"  # File where FSUB IDs are stored
 
+async def wait_for_fsub():
+    """Wait until fsub.txt is created and contains data."""
+    while not os.path.exists(FSUB_FILE) or os.stat(FSUB_FILE).st_size == 0:
+        print("[FSUB] Waiting for fsub.txt to be updated...")
+        await asyncio.sleep(5)  # Wait 5 seconds before checking again
+
 def get_fsub_ids():
     """Retrieve FSUB IDs from the fsub.txt file."""
-    if os.path.exists(FSUB_FILE):
+    if os.path.exists(FSUB_FILE) and os.stat(FSUB_FILE).st_size > 0:
         try:
             with open(FSUB_FILE, "r") as file:
                 return [int(i) for i in file.read().split()]
@@ -21,10 +27,11 @@ def get_fsub_ids():
             return []
     return []
 
-
 async def is_subscribed(filter, client, update):
     """Check if the user is subscribed to all FSUB channels."""
+    await wait_for_fsub()  # Ensure fsub.txt is available before proceeding
     fsub_ids = get_fsub_ids()
+    
     if not fsub_ids:  # No FSUB channels stored
         return True
 
@@ -46,7 +53,6 @@ async def is_subscribed(filter, client, update):
             return False
 
     return True
-
 
 async def encode(string):
     string_bytes = string.encode("ascii")
@@ -81,7 +87,6 @@ async def get_messages(client, message_ids):
         messages.extend(msgs)
     return messages
 
-
 async def get_message_id(client, message):
     if message.forward_from_chat and message.forward_from_chat.id == client.db_channel.id:
         return message.forward_from_message_id
@@ -103,7 +108,6 @@ async def get_message_id(client, message):
         return msg_id
 
     return 0
-
 
 def get_readable_time(seconds: int) -> str:
     time_units = ["s", "m", "h", "days"]
@@ -133,5 +137,17 @@ async def delete_file(messages, client, process):
 
     await process.edit_text(AUTO_DELETE_MSG)
 
+# New function: Logs user interactions
+async def log_user_action(client, user_id, action):
+    try:
+        user = await client.get_users(user_id)
+        username = user.username or "NoUsername"
+        print(f"[LOG] {username} ({user_id}) performed action: {action}")
+    except Exception as e:
+        print(f"Error logging user action: {e}")
+
+# New function: Extracts numbers from text
+def extract_numbers(text):
+    return [int(num) for num in re.findall(r"\d+", text)]
 
 subscribed = filters.create(is_subscribed)
