@@ -1,6 +1,7 @@
 from pyrogram import Client, filters
 import os
 from bot import Bot
+from config import OWNER_ID
 
 VAR = int(os.environ.get('VAR', 10))  # Load VAR from environment
 
@@ -14,3 +15,8 @@ async def update_var(client, message):
         await message.reply_text(f"VAR updated to {VAR}")
     except (IndexError, ValueError):
         await message.reply_text("Usage: /var <number>")
+
+@Bot.on_message(filters.command("getvar") & filters.user(OWNER_ID))
+async get_var():
+    await message.reply_text(f"VAR: {VAR}")
+
