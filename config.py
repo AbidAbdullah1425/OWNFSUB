@@ -18,6 +18,9 @@ PORT = os.environ.get("PORT", "8080")
 DB_URL = os.environ.get("DB_URL", "mongodb+srv://teamprosperpay:AbidAbdullah199@cluster0.z93fita.mongodb.net/")
 DB_NAME = os.environ.get("DB_NAME", "Cluster0")
 
+#Extra texting
+VAR = int(os.environ.get("VAR", "-1001111111"))
+
 # MongoDB Client Setup
 client = MongoClient(DB_URL)
 db = client[DB_NAME]
