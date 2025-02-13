@@ -17,6 +17,6 @@ async def update_var(client, message):
         await message.reply_text("Usage: /var <number>")
 
 @Bot.on_message(filters.command("getvar") & filters.user(OWNER_ID))
-async get_var():
+async get_var(client, message):
     await message.reply_text(f"VAR: {VAR}")
 
