@@ -5,7 +5,7 @@ pymongo
 pyromod==1.5
 dnspython
 redis
-libimport
+importlib
 
 
 
