@@ -1,7 +1,7 @@
+import importlib
 from pyrogram import Client, filters
 from bot import Bot
-from config import OWNER_ID, VAR  # Import the VAR from config
-import libimport
+from config import OWNER_ID, VAR
 
 @Bot.on_message(filters.command("var") & filters.user(OWNER_ID))
 async def update_var(client, message):
@@ -12,7 +12,7 @@ async def update_var(client, message):
         VAR = new_value
         
         # Dynamically reload the config.py module to apply changes
-        libimport.reload('config')
+        importlib.reload(config)  # Reload config module
         
         await message.reply_text(f"VAR updated to {VAR}")
     except (IndexError, ValueError):
@@ -23,4 +23,3 @@ async def get_var(client, message):
     # Always fetch the latest value after reloading
     latest_var = VAR  # VAR will be updated after reload
     await message.reply_text(f"VAR: {latest_var}")
-
