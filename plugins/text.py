@@ -1,6 +1,8 @@
 from pyrogram import Client, filters
 import os
+import importlib
 from bot import Bot
+import config  # Import config where OWNER_ID is stored
 from config import OWNER_ID
 
 VAR = int(os.environ.get('VAR', 10))  # Load VAR from environment
@@ -18,5 +20,6 @@ async def update_var(client, message):
 
 @Bot.on_message(filters.command("getvar") & filters.user(OWNER_ID))
 async def get_var(client, message):
-    await message.reply_text(f"VAR: {VAR}")
-
+    importlib.reload(config)  # Reload config to get the latest changes
+    latest_var = int(os.environ.get('VAR', 10))  # Reload VAR from environment
+    await message.reply_text(f"VAR: {latest_var}")
