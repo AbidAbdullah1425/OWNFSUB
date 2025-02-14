@@ -44,6 +44,16 @@ DISABLE_CHANNEL_BUTTON = os.environ.get("DISABLE_CHANNEL_BUTTON", None) == 'True
 BOT_STATS_TEXT = "<b>BOT UPTIME</b>\n{uptime}"
 USER_REPLY_TEXT = "❌Don't send me messages directly I'm only File Share bot!"
 
+dbclient = pymongo.MongoClient(DB_URL)
+database = dbclient[DB_NAME]
+user_data = database['users']
+
+
+# Function to fetch FSUB values from MongoDB
+def get_fsub(var_name, default_value):
+    data = database["fsub"].find_one({"_id": var_name})
+    return data["value"] if data else default_value
+
 FSUB_1 = get_fsub("FSUB_1", "-1001234567890")
 FSUB_2 = get_fsub("FSUB_2", "-1009876543210")
 FSUB_3 = get_fsub("FSUB_3", "-1001122334455")
