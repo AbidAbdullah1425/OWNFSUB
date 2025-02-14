@@ -69,14 +69,14 @@ logging.getLogger("pyrogram").setLevel(logging.WARNING)
 def LOGGER(name: str) -> logging.Logger:
     return logging.getLogger(name)
 
-# Dynamically Fetch FSUB Values from MongoDB
+
 FSUB_1 = get_fsub("FSUB_1", "-1001234567890")
 FSUB_2 = get_fsub("FSUB_2", "-1009876543210")
 FSUB_3 = get_fsub("FSUB_3", "-1001122334455")
 FSUB_4 = get_fsub("FSUB_4", "-1005566778899")
 
-# Log Updated FSUB Values
+
 LOGGER("ForceSub").info(f"FSUB_1={FSUB_1}, FSUB_2={FSUB_2}, FSUB_3={FSUB_3}, FSUB_4={FSUB_4}")
 
-# Ensure config reloads in every file
+
 importlib.reload(importlib.import_module("config"))
