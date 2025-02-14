@@ -9,6 +9,7 @@ from bot import Bot
 from config import ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL_BUTTON, PROTECT_CONTENT, START_PIC, AUTO_DELETE_MS, AUTO_DELETE_MSG
 from helper_func import subscribed, decode, get_messages, delete_file
 from database.database import add_user, del_user, full_userbase, present_user
+from invitelinks import generate_invite_links
 
 
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
@@ -167,17 +168,27 @@ async def start_command(client: Client, message: Message):
         return
 
 
+
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
+    # Reload the latest invite links
+    latest_links = await generate_invite_links(client)
+
+    # Fallback to bot.py links if any link is missing
+    invitelink = latest_links.get("invitelink") or client.invitelink
+    invitelink2 = latest_links.get("invitelink2") or client.invitelink2
+    invitelink3 = latest_links.get("invitelink3") or client.invitelink3
+    invitelink4 = latest_links.get("invitelink4") or client.invitelink4
+
     try:
         buttons = [
             [
-                InlineKeyboardButton(text="Join Channel", url=client.invitelink),
-                InlineKeyboardButton(text="Join Channel", url=client.invitelink2),
+                InlineKeyboardButton(text="Join Channel", url=invitelink),
+                InlineKeyboardButton(text="Join Channel", url=invitelink2),
             ],
             [
-                InlineKeyboardButton(text="Join Channel", url=client.invitelink3),
-                InlineKeyboardButton(text="Join Channel", url=client.invitelink4),
+                InlineKeyboardButton(text="Join Channel", url=invitelink3),
+                InlineKeyboardButton(text="Join Channel", url=invitelink4),
             ]
         ]
 
@@ -208,6 +219,7 @@ async def not_joined(client: Client, message: Message):
 
     except Exception as e:
         await message.reply("An error occurred. Please try again later.")
+
 
 
 @Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
