@@ -5,7 +5,7 @@ import importlib
 from logging.handlers import RotatingFileHandler
 from pymongo import MongoClient
 from bson import ObjectId
-from database.database import database  # Import database connection
+from database.database import database, get_fsub
 
 # Mandatory Environment Variables
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "7438884533:AAGVoXpBJrXXu3PTyrkWPirgYkwbuIc")
