@@ -2,7 +2,7 @@ from bot import Bot
 import asyncio
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
-from config import DB_URI
+from config import DB_URL
 import pymongo
 import importlib
 import config
@@ -10,7 +10,7 @@ from plugins import invitelinks
 from invitelinks import generate_invite_links  # We will call this function for fallback invite links
 
 # MongoDB connection
-client = pymongo.MongoClient(DB_URI)
+client = pymongo.MongoClient(DB_URL)
 db = client['bot_config']
 fsub_collection = db['fsub_channels']
 
