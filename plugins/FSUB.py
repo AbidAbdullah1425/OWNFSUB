@@ -2,7 +2,7 @@ from bot import Bot
 import asyncio
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
-from config import DB_URL
+from config import DB_URL, OWNER_ID
 import pymongo
 import importlib
 import config
