@@ -4,11 +4,13 @@ from config import DB_URI, DB_NAME
 
 dbclient = pymongo.MongoClient(DB_URI)
 database = dbclient[DB_NAME]
-
-
 user_data = database['users']
 
 
+# Function to fetch FSUB values from MongoDB
+def get_fsub(var_name, default_value):
+    data = database["fsub"].find_one({"_id": var_name})
+    return data["value"] if data else default_value
 
 async def present_user(user_id : int):
     found = user_data.find_one({'_id': user_id})
