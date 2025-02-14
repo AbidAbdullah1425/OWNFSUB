@@ -1,3 +1,4 @@
+from bot import Bot
 import asyncio
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
@@ -37,7 +38,7 @@ def save_fsub_data(fsub_1, fsub_2, fsub_3, fsub_4):
     fsub_collection.replace_one({"_id": "fsub_data"}, fsub_data, upsert=True)  # Save or update
 
 # Command: /fsub
-@Client.on_message(filters.command('fsub') & filters.user(OWNER_ID) & filters.private)
+@Bot.on_message(filters.command('fsub') & filters.user(OWNER_ID) & filters.private)
 async def fsub(client: Client, message: Message):
     await message.reply("Please enter the new FSUB_1 channel ID:")
     response = await client.listen(message.chat.id)
@@ -64,7 +65,7 @@ async def fsub(client: Client, message: Message):
     await message.reply("FSUB values updated successfully!")
 
 # Command: /show_fsub
-@Client.on_message(filters.command('show_fsub') & filters.user(OWNER_ID) & filters.private)
+@Bot.on_message(filters.command('show_fsub') & filters.user(OWNER_ID) & filters.private)
 async def show_fsub(client: Client, message: Message):
     # Reload config and invitelinks before displaying the latest values
     reload_modules()
