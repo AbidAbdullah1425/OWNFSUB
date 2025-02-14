@@ -54,10 +54,10 @@ def get_fsub(var_name, default_value):
     data = database["fsub"].find_one({"_id": var_name})
     return data["value"] if data else default_value
 
-FSUB_1 = get_fsub("FSUB_1", "-1002436650756)
-FSUB_2 = get_fsub("FSUB_2", "-1002355785538)
-FSUB_3 = get_fsub("FSUB_3", "-1002386614375)
-FSUB_4 = get_fsub("FSUB_4", "-1002345564361)
+FSUB_1 = get_fsub("FSUB_1", "-1002436650756")
+FSUB_2 = get_fsub("FSUB_2", "-1002355785538")
+FSUB_3 = get_fsub("FSUB_3", "-1002386614375")
+FSUB_4 = get_fsub("FSUB_4", "-1002345564361")
 
 ADMINS.append(OWNER_ID)
 ADMINS.append(5296584067)
