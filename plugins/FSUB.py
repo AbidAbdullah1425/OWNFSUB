@@ -7,7 +7,7 @@ import pymongo
 import importlib
 import config
 from plugins import invitelinks
-from invitelinks import generate_invite_links  # We will call this function for fallback invite links
+from plugins.invitelinks import generate_invite_links  # We will call this function for fallback invite links
 
 # MongoDB connection
 client = pymongo.MongoClient(DB_URL)
