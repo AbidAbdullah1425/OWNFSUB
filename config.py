@@ -1,6 +1,5 @@
 import os
 import logging
-import redis
 import importlib
 from logging.handlers import RotatingFileHandler
 from pymongo import MongoClient
