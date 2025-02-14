@@ -4,7 +4,6 @@ git+https://github.com/AbidAbdullah1425/pyrogram.git@dev#egg=pyrogram
 pymongo
 pyromod==1.5
 dnspython
-redis
 
 
 
