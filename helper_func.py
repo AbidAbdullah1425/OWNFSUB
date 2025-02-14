@@ -6,9 +6,19 @@ from pyrogram.enums import ChatMemberStatus
 from config import FSUB_1, FSUB_2, FSUB_3, FSUB_4, ADMINS, AUTO_DELETE_MS, AUTO_DELETE_MSG
 from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant
 from pyrogram.errors import FloodWait
+import importlib
+import config  # Import config module
+
 
 
 async def is_subscribed(filter, client, update):
+    # Reload config to get the latest FSUB values
+    importlib.reload(config)
+
+    # Get latest FSUB values
+    FSUB_1, FSUB_2, FSUB_3, FSUB_4 = config.FSUB_1, config.FSUB_2, config.FSUB_3, config.FSUB_4
+    ADMINS = config.ADMINS
+
     if not (FSUB_1 or FSUB_2 or FSUB_3 or FSUB_4):
         return True
 
@@ -32,6 +42,7 @@ async def is_subscribed(filter, client, update):
             return False
 
     return True
+
 
 
 async def encode(string):
