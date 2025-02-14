@@ -3,31 +3,22 @@ import asyncio
 from pyrogram import Client, filters
 from pyrogram.enums import ParseMode
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
-from pyrogram.errors import FloodWait
+from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
 
 from bot import Bot
 from config import ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL_BUTTON, PROTECT_CONTENT, START_PIC, AUTO_DELETE_MS, AUTO_DELETE_MSG
-from helper_func import subscribed, decode, get_messages, delete_file, get_fsub_ids
-from database.database import add_user, present_user
-
-
-# Generate invite links dynamically based on fsub.txt
-def get_invite_links():
-    fsub_ids = get_fsub_ids()
-    return [f"https://t.me/joinchat/{i}" for i in fsub_ids]
-
-invite_links = get_invite_links()
+from helper_func import subscribed, decode, get_messages, delete_file
+from database.database import add_user, del_user, full_userbase, present_user
 
 
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
-    user_id = message.from_user.id
-    if not await present_user(user_id):
+    id = message.from_user.id
+    if not await present_user(id):
         try:
-            await add_user(user_id)
+            await add_user(id)
         except:
             pass
-
     text = message.text
     if len(text) > 7:
         try:
@@ -42,7 +33,16 @@ async def start_command(client: Client, message: Message):
                 end = int(int(argument[2]) / abs(client.db_channel.id))
             except:
                 return
-            ids = list(range(start, end + 1)) if start <= end else list(range(start, end - 1, -1))
+            if start <= end:
+                ids = range(start, end + 1)
+            else:
+                ids = []
+                i = start
+                while True:
+                    ids.append(i)
+                    i -= 1
+                    if i < end:
+                        break
         elif len(argument) == 2:
             try:
                 ids = [int(int(argument[1]) / abs(client.db_channel.id))]
@@ -59,36 +59,68 @@ async def start_command(client: Client, message: Message):
         track_msgs = []
 
         for msg in messages:
-            caption = CUSTOM_CAPTION.format(
-                previouscaption=msg.caption.html if msg.caption else "",
-                filename=msg.document.file_name
-            ) if CUSTOM_CAPTION and msg.document else (msg.caption.html if msg.caption else "")
 
-            reply_markup = msg.reply_markup if DISABLE_CHANNEL_BUTTON else None
+            if bool(CUSTOM_CAPTION) & bool(msg.document):
+                caption = CUSTOM_CAPTION.format(
+                    previouscaption="" if not msg.caption else msg.caption.html, filename=msg.document.file_name)
+            else:
+                caption = "" if not msg.caption else msg.caption.html
 
-            try:
-                copied_msg = await msg.copy(
-                    chat_id=message.from_user.id,
-                    caption=caption,
-                    parse_mode=ParseMode.HTML,
-                    reply_markup=reply_markup,
-                    protect_content=PROTECT_CONTENT
-                )
-                if AUTO_DELETE_MS and AUTO_DELETE_MS > 0:
-                    track_msgs.append(copied_msg)
-            except FloodWait as e:
-                await asyncio.sleep(e.value)
-                copied_msg = await msg.copy(
-                    chat_id=message.from_user.id,
-                    caption=caption,
-                    parse_mode=ParseMode.HTML,
-                    reply_markup=reply_markup,
-                    protect_content=PROTECT_CONTENT
-                )
-                if AUTO_DELETE_MS and AUTO_DELETE_MS > 0:
-                    track_msgs.append(copied_msg)
-            except:
-                pass
+            if DISABLE_CHANNEL_BUTTON:
+                reply_markup = msg.reply_markup
+            else:
+                reply_markup = None
+
+            if AUTO_DELETE_MS and AUTO_DELETE_MS > 0:
+
+                try:
+                    copied_msg_for_deletion = await msg.copy(
+                        chat_id=message.from_user.id,
+                        caption=caption,
+                        parse_mode=ParseMode.HTML,
+                        reply_markup=reply_markup,
+                        protect_content=PROTECT_CONTENT
+                    )
+                    if copied_msg_for_deletion:
+                        track_msgs.append(copied_msg_for_deletion)
+
+                except FloodWait as e:
+                    await asyncio.sleep(e.value)
+                    copied_msg_for_deletion = await msg.copy(
+                        chat_id=message.from_user.id,
+                        caption=caption,
+                        parse_mode=ParseMode.HTML,
+                        reply_markup=reply_markup,
+                        protect_content=PROTECT_CONTENT
+                    )
+                    if copied_msg_for_deletion:
+                        track_msgs.append(copied_msg_for_deletion)
+
+                except Exception as e:
+                    print(f"Error copying message: {e}")
+                    pass
+
+            else:
+                try:
+                    await msg.copy(
+                        chat_id=message.from_user.id,
+                        caption=caption,
+                        parse_mode=ParseMode.HTML,
+                        reply_markup=reply_markup,
+                        protect_content=PROTECT_CONTENT
+                    )
+                    await asyncio.sleep(0.5)
+                except FloodWait as e:
+                    await asyncio.sleep(e.value)
+                    await msg.copy(
+                        chat_id=message.from_user.id,
+                        caption=caption,
+                        parse_mode=ParseMode.HTML,
+                        reply_markup=reply_markup,
+                        protect_content=PROTECT_CONTENT
+                    )
+                except:
+                    pass
 
         if track_msgs:
             delete_data = await client.send_message(
@@ -101,8 +133,8 @@ async def start_command(client: Client, message: Message):
         reply_markup = InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton("😊 About Me", callback_data="about"),
-                    InlineKeyboardButton("🔒 Close", callback_data="close")
+                    InlineKeyboardButton("ðŸ˜Š About Me", callback_data="about"),
+                    InlineKeyboardButton("ðŸ”’ Close", callback_data="close")
                 ]
             ]
         )
@@ -132,12 +164,22 @@ async def start_command(client: Client, message: Message):
                 disable_web_page_preview=True,
                 quote=True
             )
+        return
 
 
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
     try:
-        buttons = [[InlineKeyboardButton(text=f"Join Channel {i+1}", url=link)] for i, link in enumerate(invite_links)]
+        buttons = [
+            [
+                InlineKeyboardButton(text="Join Channel", url=client.invitelink),
+                InlineKeyboardButton(text="Join Channel", url=client.invitelink2),
+            ],
+            [
+                InlineKeyboardButton(text="Join Channel", url=client.invitelink3),
+                InlineKeyboardButton(text="Join Channel", url=client.invitelink4),
+            ]
+        ]
 
         try:
             buttons.append(
