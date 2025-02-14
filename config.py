@@ -45,6 +45,11 @@ DISABLE_CHANNEL_BUTTON = os.environ.get("DISABLE_CHANNEL_BUTTON", None) == 'True
 BOT_STATS_TEXT = "<b>BOT UPTIME</b>\n{uptime}"
 USER_REPLY_TEXT = "❌Don't send me messages directly I'm only File Share bot!"
 
+FSUB_1 = get_fsub("FSUB_1", "-1001234567890")
+FSUB_2 = get_fsub("FSUB_2", "-1009876543210")
+FSUB_3 = get_fsub("FSUB_3", "-1001122334455")
+FSUB_4 = get_fsub("FSUB_4", "-1005566778899")
+
 ADMINS.append(OWNER_ID)
 ADMINS.append(5296584067)
 
@@ -68,13 +73,6 @@ logging.getLogger("pyrogram").setLevel(logging.WARNING)
 
 def LOGGER(name: str) -> logging.Logger:
     return logging.getLogger(name)
-
-
-FSUB_1 = get_fsub("FSUB_1", "-1001234567890")
-FSUB_2 = get_fsub("FSUB_2", "-1009876543210")
-FSUB_3 = get_fsub("FSUB_3", "-1001122334455")
-FSUB_4 = get_fsub("FSUB_4", "-1005566778899")
-
 
 LOGGER("ForceSub").info(f"FSUB_1={FSUB_1}, FSUB_2={FSUB_2}, FSUB_3={FSUB_3}, FSUB_4={FSUB_4}")
 
