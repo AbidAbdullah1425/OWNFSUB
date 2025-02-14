@@ -7,7 +7,7 @@ from pymongo import MongoClient
 from bson import ObjectId
 
 # Mandatory Environment Variables
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "7606517826:AAF8cSrJwHmwSjgNYQQtUKySmsl8178CTpA")
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "0")
 API_ID = int(os.environ.get("API_ID", "26254064"))
 API_HASH = os.environ.get("API_HASH", "72541d6610ae7730e6135af9423b319c")
 
