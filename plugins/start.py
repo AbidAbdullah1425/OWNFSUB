@@ -5,6 +5,7 @@ from pyrogram.enums import ParseMode
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
 
+import importlib
 importlib.reload(invitelinks)
 
 from bot import Bot
