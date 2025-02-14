@@ -18,40 +18,6 @@ PORT = os.environ.get("PORT", "8080")
 DB_URL = os.environ.get("DB_URL", "mongodb+srv://teamprosperpay:AbidAbdullah199@cluster0.z93fita.mongodb.net/")
 DB_NAME = os.environ.get("DB_NAME", "Cluster0")
 
-#Extra texting
-VAR = int(os.environ.get("VAR", "-1001111111"))
-
-# MongoDB Client Setup
-client = MongoClient(DB_URL)
-db = client[DB_NAME]
-collection = db["settings"]
-
-# Redis Configuration
-REDIS_HOST = os.environ.get("REDIS_HOST", "redis-17680.c232.us-east-1-2.ec2.redns.redis-cloud.com")
-REDIS_PORT = int(os.environ.get("REDIS_PORT", "17680"))
-REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "OvQhflEV6b8yu6OJMHo2eynM8XR0GJJC")
-
-#redis connect
-redis_client = redis.StrictRedis(
-    host=REDIS_HOST,
-    port=REDIS_PORT,
-    password=REDIS_PASSWORD,
-    ssl=False,  # Enable SSL
-    decode_responses=True
-)
-
-
-# Function to Fetch FSUB Variables from Redis
-def update_fsub_values():
-    global FSUB_1, FSUB_2, FSUB_3, FSUB_4
-    FSUB_1 = int(redis_client.get("FSUB_1") or "-1002315395252")
-    FSUB_2 = int(redis_client.get("FSUB_2") or "-1002386614375")
-    FSUB_3 = int(redis_client.get("FSUB_3") or "-1002253609533")
-    FSUB_4 = int(redis_client.get("FSUB_4") or "-1002386614375")
-
-# Call `update_fsub_values` Whenever FSUB Values Are Needed
-update_fsub_values()
-
 BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "4"))
 START_PIC = os.environ.get("START_PIC", "https://envs.sh/_BZ.jpg")
 START_MSG = os.environ.get("START_MESSAGE", "Hello {first} I'm a bot who can store files and share it via special links")
